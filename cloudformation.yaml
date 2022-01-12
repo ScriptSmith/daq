@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  Thing:
+    Type: AWS::IoT::Thing
+  Policy:
+    Type: AWS::IoT::Policy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - iot:Connect
+              - iot:Publish
+              - iot:Subscribe
+              - iot:Receive
+            Resource: "*"
+  Database:
+    Type: AWS::Timestream::Database
+  Table:
+    Type: AWS::Timestream::Table
+    Properties:
+      DatabaseName: !Ref "Database"
+      RetentionProperties:
+        MemoryStoreRetentionPeriodInHours: !Ref "MemoryRetentionHours"
+        MagneticStoreRetentionPeriodInDays: !Ref "MagneticRetentionDays"
+  TopicRule:
+    Type: AWS::IoT::TopicRule
+    Properties:
+      TopicRulePayload:
+        RuleDisabled: false
+        Sql: "SELECT co2, tmp, hmd, pm2, wifi FROM 'daq'"
+        Actions:
+          - Timestream:
+              RoleArn: !GetAtt ["TopicRuleRole", "Arn"]
+              DatabaseName: !Ref "Database"
+              TableName: !Select [1, !Split ["|", !Ref Table]]
+              Dimensions:
+                - Name: device_id
+                  Value: "${device_id}"
+                - Name: room
+                  Value: "${room}"
+  TopicRuleRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - iot.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: !Join ["", ["IoTDataToTimestreamInlinePolicy-", !Ref "AWS::Region"]]
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - timestream:WriteRecords
+                Resource: !GetAtt ["Table", "Arn"]
+              - Effect: Allow
+                Action:
+                  - timestream:DescribeEndpoints
+                Resource: "*"
+      Path: "/service-role/"
+Parameters:
+  MemoryRetentionHours:
+    Type: String
+    Description: Hours to store timeseries data in memory
+    Default: "24"
+  MagneticRetentionDays:
+    Type: String
+    Description: Days to store timeseries data in magnetic storage
+    Default: "3650"
+Outputs:
+  ThingName:
+    Description: IOT Thing name
+    Value: !Ref "Thing"
+  PolicyName:
+    Description: IOT Policy name
+    Value: !Ref "Policy"
+  DatabaseTableName:
+    Description: Timestream database and table name
+    Value: !Ref "Table"
+  TopicRuleName:
+    Description: Topic rule name for basic ingest
+    Value: !Ref "TopicRule"

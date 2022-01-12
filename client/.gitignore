@@ -1,0 +1,6 @@
+.pio
+CMakeLists.txt
+CMakeListsPrivate.txt
+cmake-build-*/
+
+include/config.h
