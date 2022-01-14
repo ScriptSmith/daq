@@ -33,7 +33,7 @@ See also Jeff Geerling's video for tips:
 
 ## Uploading the custom client
 
-[AirGradient's client](https://www.airgradient.com/resources/basic-setup-skills-and-equipment-needed-to-build-our-airgradient-diy-sensor/) can be uploaded using the Arduino IDE. 
+[AirGradient's client](https://www.airgradient.com/diy/#flashing-of-the-d1-mini-with-the-airgradient-firmware) can be uploaded using the Arduino IDE.
 
 This custom client uses the [platformio framework](https://docs.platformio.org/) to manage the toolchain for building and deployment.
 
