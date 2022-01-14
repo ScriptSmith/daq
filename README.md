@@ -10,11 +10,35 @@ Records & visualises CO2, PM2.5, temperature, and humidity.
 
 **Sections:**
 
-1. [Assembly](#assembly)
-2. [Uploading the custom client](#uploading-the-custom-client)
-3. [AWS setup](#aws-setup)
-4. [Connect client to AWS](#connect-client-to-aws)
-5. [Grafana setup](#grafana-setup)
+1. [Estimated cost](#estimated-cost)
+2. [Assembly](#assembly)
+3. [Uploading the custom client](#uploading-the-custom-client)
+4. [AWS setup](#aws-setup)
+5. [Connect client to AWS](#connect-client-to-aws)
+6. [Grafana setup](#grafana-setup)
+
+## Estimated cost
+
+*As of January 2022*
+
+The [DIY kit](https://www.airgradient.com/diy/) can be bought from [AirGradient's shop](https://www.airgradient.com/diyshop/) for between US$46 and US$60 + shipping
+
+AWS IoT Core + Amazon Timestream costs are _estimated_ to be approximately the following:
+
+
+| Service           | Link                                                              | First month | With 10 years of data |
+|-------------------|-------------------------------------------------------------------|-------------|-----------------------|
+| AWS IoT Core      | [Pricing](https://aws.amazon.com/iot-core/pricing/)               | US$0.08     | US$0.08               |
+| Amazon Timestream | [Pricing](https://aws.amazon.com/timestream/pricing/?nc=sn&loc=3) | US$0.22     | US$0.42               |
+
+Notes:
+
+- Costs will vary depending on usage and prices are subject to change
+- You may benefit from using [scheduled queries](https://docs.aws.amazon.com/timestream/latest/developerguide/scheduledqueries.html) depending on your usage patterns
+- Assumes running in `us-east-2`
+- Assumes limited querying scope and frequency
+- Assumes sending data using [Basic Ingest](https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html)
+- Assumes 24h in-memory retention
 
 ## Assembly
 
