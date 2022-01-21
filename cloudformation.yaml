@@ -52,7 +52,7 @@ Resources:
             Action:
               - sts:AssumeRole
       Policies:
-        - PolicyName: !Join ["", ["IoTDataToTimestreamInlinePolicy-", !Ref "AWS::Region"]]
+        - PolicyName: "DaqIoTDataToTimestreamInlinePolicy"
           PolicyDocument:
             Version: '2012-10-17'
             Statement:
@@ -65,6 +65,37 @@ Resources:
                   - timestream:DescribeEndpoints
                 Resource: "*"
       Path: "/service-role/"
+  QueryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Ref "AWS::AccountId"
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: "DaqTimestreamQueryInlinePolicy"
+          PolicyDocument:
+            Statement:
+              - Effect: Allow
+                Action:
+                  - timestream:DescribeDatabase
+                  - timestream:ListTables
+                Resource: !GetAtt "Database.Arn"
+              - Effect: Allow
+                Action:
+                  - timestream:ListMeasures
+                  - timestream:Select
+                  - timestream:DescribeTable
+                Resource: !GetAtt "Table.Arn"
+              - Effect: Allow
+                Action:
+                  - timestream:DescribeEndpoints
+                  - timestream:ListDatabases
+                  - timestream:SelectValues
+                Resource: "*"
 Parameters:
   MemoryRetentionHours:
     Type: String
@@ -84,6 +115,9 @@ Outputs:
   DatabaseTableName:
     Description: Timestream database and table name
     Value: !Ref "Table"
+  QueryRole:
+    Description: Arn of the role used to query the table
+    Value: !GetAtt "QueryRole.Arn"
   TopicRuleName:
     Description: Topic rule name for basic ingest
     Value: !Ref "TopicRule"
