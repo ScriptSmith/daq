@@ -1,4 +1,4 @@
 *.pem
 *.key
-cert_details.json
-stack_details.json
+cert_output.json
+stack_output.json
