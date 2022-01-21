@@ -245,61 +245,35 @@ $ aws timestream-query query --query-string 'SELECT * FROM "{DATABASE_NAME}"."{T
 
 ## Grafana setup
 
-See the installation instructions for [Grafana](https://grafana.com/grafana/) and the [AWS Timestream plugin](https://grafana.com/grafana/plugins/grafana-timestream-datasource/).
+See the installation instructions for [Grafana](https://grafana.com/grafana/).
 
-Relevant timestream queries look like so:
+Add an [AWS Timestream Data Source](https://grafana.com/grafana/plugins/grafana-timestream-datasource/):
+1. In `Configuration` -> `Plugins`, install the `Amazon Timestream` plugin
+2. In `Configuration` -> `Data Sources`, click `Add data source` -> `Amazon Timestream`
+3. Pick your preferred method of creating AWS credentials
+   1. Create an IAM User and attach the `AmazonTimestreamReadOnlyAccess` policy
+      ```
+      aws iam create-user --user-name GrafanaTimestreamQuery
+      aws iam attach-user-policy --user-name GrafanaTimestreamQuery --policy-arn "arn:aws:iam::aws:policy/AmazonTimestreamReadOnlyAccess"
+      aws iam create-access-key --user-name GrafanaTimestreamQuery
+      ```
+   2. Use your root credentials and in the `Assume Role ARN` field, enter the ARN of the `QueryRole` role in `stack_outputs.json` 
+   3. Use your root credentials
+4. In the `Authentication Provider` field, either:
+   1. Choose `Access & secret key` and enter the keys directly.
+   2. Choose `AWS SDK Default` or `Credentials file` and configure your AWS credentials through the filesystem or env variables
+5. In the `Default Region` field, enter the AWS Region
+6. Click `Save & test`
 
-*Note: Adjust the `bin` ranges according to your own conditions*.
+Import the default dashboard:
 
-### CO2
+1. In `Create` -> `Import`, click `Upload JSON file` and select `dashboard.json`
+2. Change the value of `Amazon Timestream` to your Amazon Timestream Data Source
+3. Change the value of `Database` to the name of your database
+4. Change the value of `Table` to the name of your table
+5. Click `Import`
 
-```sql
-select round(avg(measure_value::bigint),0), bin(time, 5m) as timestamp
-from $__database.$__table 
-where 'co2' = measure_name and time > ago(24h) and measure_value::bigint > 0
-group by bin(time, 5m)
-order by timestamp
-```
-
-### PM2.5
-
-```sql
-select max(measure_value::bigint), bin(time, 10m) as timestamp
-from $__database.$__table 
-where 'pm2' = measure_name and time > ago(24h)
-group by bin(time, 10m)
-order by timestamp
-```
-
-### Temperature
-
-```sql
-select round(avg(measure_value::double),1), bin(time, 5m) as timestamp
-from $__database.$__table 
-where 'tmp' = measure_name and time > ago(24h)
-group by bin(time, 5m)
-order by timestamp
-```
-
-### Humidity
-
-```sql
-select round(avg(measure_value::bigint),1), bin(time, 10m) as timestamp
-from $__database.$__table 
-where 'hmd' = measure_name and time > ago(24h)
-group by bin(time, 10m)
-order by timestamp
-```
-
-### Wi-Fi
-
-```sql
-select round(avg(measure_value::bigint),0), bin(time, 5m) as timestamp
-from $__database.$__table 
-where 'wifi' = measure_name and time > ago(24h)
-group by bin(time, 5m)
-order by timestamp
-```
+![grafana dashboard](assets/grafana_dashboard.png)
 
 ## Acknowledgements
 
