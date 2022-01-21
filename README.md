@@ -2,11 +2,12 @@
 
 DIY Air Quality Monitor by [AirGradient](https://www.airgradient.com/diy/) integrated with [AWS Iot Core](https://aws.amazon.com/iot-core/) & [Amazon Timestream](https://aws.amazon.com/timestream/), for display in [Grafana](https://grafana.com/oss/grafana/).
 
-Records & visualises CO2, PM2.5, temperature, and humidity.
+Records & visualises Carbon Dioxide, Particulate Matter, Temperature, and Humidity.
 
 ![grafana dashboard](assets/grafana_dashboard.png)
 
 ![pcb & components](assets/device.jpg)
+
 
 **Sections:**
 
@@ -29,16 +30,22 @@ AWS IoT Core + Amazon Timestream costs are _estimated_ to be approximately the f
 | Service           | Link                                                              | First month | With 10 years of data |
 |-------------------|-------------------------------------------------------------------|-------------|-----------------------|
 | AWS IoT Core      | [Pricing](https://aws.amazon.com/iot-core/pricing/)               | US$0.08     | US$0.08               |
-| Amazon Timestream | [Pricing](https://aws.amazon.com/timestream/pricing/?nc=sn&loc=3) | US$0.22     | US$0.42               |
+| Amazon Timestream | [Pricing](https://aws.amazon.com/timestream/pricing/?nc=sn&loc=3) | US$0.22     | US$0.45               |
+
+Assumptions:
+- Running in `us-east-2`
+- Limited querying scope and frequency
+- Sending data using [Basic Ingest](https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html)
+- 24h in-memory retention
+
 
 Notes:
 
 - Costs will vary depending on usage and prices are subject to change
 - You may benefit from using [scheduled queries](https://docs.aws.amazon.com/timestream/latest/developerguide/scheduledqueries.html) depending on your usage patterns
-- Assumes running in `us-east-2`
-- Assumes limited querying scope and frequency
-- Assumes sending data using [Basic Ingest](https://docs.aws.amazon.com/iot/latest/developerguide/iot-basic-ingest.html)
-- Assumes 24h in-memory retention
+- There is a 10MB (US$0.0001) minimum charge per query
+- In the default configuration, a little more than 2MB is added to Timestream each day
+
 
 ## Assembly
 
@@ -60,6 +67,8 @@ See also Jeff Geerling's video for tips:
 [AirGradient's client](https://www.airgradient.com/diy/#flashing-of-the-d1-mini-with-the-airgradient-firmware) can be uploaded using the Arduino IDE.
 
 This custom client uses the [platformio framework](https://docs.platformio.org/) to manage the toolchain for building and deployment.
+
+In the `client` directory:
 
 ### Build
 
@@ -100,27 +109,29 @@ Create the [client certificates](https://docs.aws.amazon.com/iot/latest/develope
 aws iot create-keys-and-certificate \
     --certificate-pem-outfile "daq.cert.pem" \
     --public-key-outfile "daq.public.key" \
-    --private-key-outfile "daq.private.key" > cert_details.json
+    --private-key-outfile "daq.private.key" > cert_outputs.json
 ```
 
 Deploy the CloudFormation stack:
 
 ```
 aws cloudformation deploy \
-    --template-file cloudformation.yaml \
+    --template-file daq-stack.yaml \
     --capabilities CAPABILITY_IAM \
     --stack-name $STACK_NAME \
     --parameter-overrides MemoryRetentionHours=24 MagneticRetentionDays=3650 # Adjust to your preference
 ```
 
 ```
-aws cloudformation describe-stacks --stack-name $STACK_NAME > stack_details.json
+aws cloudformation describe-stacks \
+    --stack-name $STACK_NAME
+    --query 'Stacks[0].Outputs' > stack_outputs.json
 ```
 
 Once the stack has been successfully deployed, configure the certificate.
 
 ```
-cat cert_details.json stack_details.json
+cat cert_outputs.json stack_outputs.json
 ```
 
 Mark as active:
