@@ -2,7 +2,7 @@
 
 DIY Air Quality Monitor by [AirGradient](https://www.airgradient.com/diy/) integrated with [AWS Iot Core](https://aws.amazon.com/iot-core/) & [Amazon Timestream](https://aws.amazon.com/timestream/), for display in [Grafana](https://grafana.com/oss/grafana/).
 
-Records & visualises Carbon Dioxide, Particulate Matter, Temperature, and Humidity.
+Records & visualises carbon dioxide, particulate matter, temperature, and humidity.
 
 ![grafana dashboard](assets/grafana_dashboard.png)
 
@@ -22,7 +22,7 @@ Records & visualises Carbon Dioxide, Particulate Matter, Temperature, and Humidi
 
 *As of January 2022*
 
-The [DIY kit](https://www.airgradient.com/diy/) can be bought from [AirGradient's shop](https://www.airgradient.com/diyshop/) for between US$46 and US$60 + shipping
+The [DIY kit](https://www.airgradient.com/diy/) can be purchased from [AirGradient's shop](https://www.airgradient.com/diyshop/) for between US$46 and US$60 + shipping
 
 AWS IoT Core + Amazon Timestream costs are _estimated_ to be approximately the following:
 
@@ -119,7 +119,7 @@ aws cloudformation deploy \
     --template-file daq-stack.yaml \
     --capabilities CAPABILITY_IAM \
     --stack-name $STACK_NAME \
-    --parameter-overrides MemoryRetentionHours=24 MagneticRetentionDays=3650 # Adjust to your preference
+    --parameter-overrides MemoryRetentionHours=24 MagneticRetentionDays=3650
 ```
 
 ```
@@ -247,7 +247,7 @@ $ aws timestream-query query --query-string 'SELECT * FROM "{DATABASE_NAME}"."{T
 
 See the installation instructions for [Grafana](https://grafana.com/grafana/).
 
-Add an [AWS Timestream Data Source](https://grafana.com/grafana/plugins/grafana-timestream-datasource/):
+Add an [Amazon Timestream Data Source](https://grafana.com/grafana/plugins/grafana-timestream-datasource/):
 1. In `Configuration` -> `Plugins`, install the `Amazon Timestream` plugin
 2. In `Configuration` -> `Data Sources`, click `Add data source` -> `Amazon Timestream`
 3. Pick your preferred method of creating AWS credentials
@@ -259,9 +259,9 @@ Add an [AWS Timestream Data Source](https://grafana.com/grafana/plugins/grafana-
       ```
    2. Use your root credentials and in the `Assume Role ARN` field, enter the ARN of the `QueryRole` role in `stack_outputs.json` 
    3. Use your root credentials
-4. In the `Authentication Provider` field, either:
-   1. Choose `Access & secret key` and enter the keys directly.
-   2. Choose `AWS SDK Default` or `Credentials file` and configure your AWS credentials through the filesystem or env variables
+4. In the `Authentication Provider` field, choose either:
+   1. `Access & secret key` and enter the keys directly.
+   2. `AWS SDK Default` or `Credentials file` and configure your AWS credentials through the filesystem or env variables
 5. In the `Default Region` field, enter the AWS Region
 6. Click `Save & test`
 
