@@ -116,7 +116,7 @@ Deploy the CloudFormation stack:
 
 ```
 aws cloudformation deploy \
-    --template-file daq-stack.yaml \
+    --template-file cloudformation.yaml \
     --capabilities CAPABILITY_IAM \
     --stack-name $STACK_NAME \
     --parameter-overrides MemoryRetentionHours=24 MagneticRetentionDays=3650
@@ -124,7 +124,7 @@ aws cloudformation deploy \
 
 ```
 aws cloudformation describe-stacks \
-    --stack-name $STACK_NAME
+    --stack-name $STACK_NAME \
     --query 'Stacks[0].Outputs' > stack_outputs.json
 ```
 
@@ -169,6 +169,7 @@ In `client/include/config.h`, update the following:
 Then upload the changes:
 
 ```
+cd client
 pio run -t upload
 ```
 
