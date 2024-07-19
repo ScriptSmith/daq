@@ -20,6 +20,13 @@ Records & visualises carbon dioxide, particulate matter, temperature, and humidi
 
 ## Estimated cost
 
+> [!IMPORTANT]  
+> **July 2024 Update**: AWS will now charge for a 100GB minimum of magnetic storage
+> 
+> _Effective July 10, 2024, the service will have a new minimum requirement for the magnetic store usage. All accounts using the service are subject to a 100GB storage minimum, equivalent to $3/month (in US-EAST-1), of the magnetic store. Refer to the pricing page for the prevailing rates of magnetic store usage in your AWS region [1]. If the magnetic store usage in your account exceeds 100 GB, there will be no change to your billing._
+>
+> You can export your data from timestream to s3 using the new [S3 UNLOAD statement](https://docs.aws.amazon.com/timestream/latest/developerguide/export-unload-concepts.html)
+
 *As of January 2022*
 
 The [DIY kit](https://www.airgradient.com/diy/) can be purchased from [AirGradient's shop](https://www.airgradient.com/diyshop/) for between US$46 and US$60 + shipping
